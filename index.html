@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AES Visualizer & Sandbox</title>
+<title>AES Visualizer & Calculator</title>
 <style>
 *{box-sizing:border-box}
 body{
@@ -35,7 +35,7 @@ h1{margin:0;text-align:center;font-size:clamp(32px,7vw,52px);letter-spacing:-1.5
 h1 span{background:linear-gradient(90deg,#6ee7b7,#60a5fa);-webkit-background-clip:text;background-clip:text;color:transparent}
 .sub{text-align:center;color:#9aa6c8;margin:12px 0 34px;line-height:1.6}
 
-.cards{display:flex;flex-direction:column;gap:14px}
+.cards{display:flex;flex-direction:column;gap:16px}
 a.card{
   display:block;
   text-decoration:none;
@@ -43,7 +43,7 @@ a.card{
   background:rgba(255,255,255,.045);
   border:1px solid rgba(255,255,255,.1);
   border-radius:18px;
-  padding:20px 24px;
+  padding:22px 26px;
   transition:.2s cubic-bezier(.4,0,.2,1);
 }
 a.card:hover{
@@ -52,11 +52,10 @@ a.card:hover{
   background:rgba(255,255,255,.07);
   box-shadow:0 12px 30px rgba(0,0,0,.35);
 }
-a.card b{display:block;font-size:18px;margin-bottom:6px;color:#f0f4ff}
-a.card span{color:#b3bdd9;line-height:1.55;font-size:14px}
-a.card em{font-style:normal;color:#6ee7b7;font-size:12px;display:inline-block;margin-top:10px;font-weight:600}
+a.card b{display:block;font-size:19px;margin-bottom:8px;color:#f0f4ff}
+a.card span{color:#b3bdd9;line-height:1.55;font-size:15px}
 
-footer{text-align:center;color:#6b7799;font-size:12px;margin-top:38px;line-height:1.6}
+footer{text-align:center;color:#6b7799;font-size:12px;margin-top:42px;line-height:1.6}
 </style>
 </head>
 <body>
@@ -71,20 +70,14 @@ footer{text-align:center;color:#6b7799;font-size:12px;margin-top:38px;line-heigh
   <p class="sub" id="sub"></p>
 
   <div class="cards">
-    <a class="card" href="simple.html">
+    <a class="card" href="steps.html">
       <b id="c1_t"></b>
       <span id="c1_d"></span>
-      <em id="c1_b"></em>
-    </a>
-
-    <a class="card" href="steps.html">
-      <b id="c2_t"></b>
-      <span id="c2_d"></span>
     </a>
 
     <a class="card" href="calculator.html">
-      <b id="c3_t"></b>
-      <span id="c3_d"></span>
+      <b id="c2_t"></b>
+      <span id="c2_d"></span>
     </a>
   </div>
 
@@ -94,36 +87,27 @@ footer{text-align:center;color:#6b7799;font-size:12px;margin-top:38px;line-heigh
 <script>
 const T = {
   uz: {
-    sub: "AES (Rijndael) algoritmini bosqichma-bosqich o'rganish uchun interaktiv vositalar.",
-    c1_t: "1. Oddiy tushuntirish (Simple visualizer)",
-    c1_d: "Shifrlash va deshifrlash, barcha 10 ta raund, intuitiv matritsalar va tushunarli izohlar.",
-    c1_b: "Tavsiya etiladi · Yangi o'rganuvchilar uchun",
-    c2_t: "2. Chuqurlashtirilgan bosqichlar (Detailed steps)",
-    c2_d: "SubBytes, ShiftRows, MixColumns (GF(2⁸) ko'paytmasi) va kalit kengaytirishning to'liq matematik tahlili.",
-    c3_t: "3. AES kalkulyatori (Full calculator)",
-    c3_d: "AES-128/192/256 turlari, ECB va CBC rejimlari, ixtiyoriy matnlarni shifrlash va deshifrlash.",
+    sub: "AES algoritmini bosqichma-bosqich o'rganish va hisoblash vositalari.",
+    c1_t: "1. Bosqichma-bosqich tahlil (Detailed Steps)",
+    c1_d: "SubBytes, ShiftRows, MixColumns (GF(2⁸) maydoni amallari) va kalit kengaytirishning to'liq tahlili.",
+    c2_t: "2. AES Kalkulyatori (Full Calculator)",
+    c2_d: "AES-128/192/256 o'lchamlari, ECB va CBC rejimlari, to'liq matnlarni shifrlash va deshifrlash.",
     foot: "O'quv maqsadida yaratilgan. Barcha hisoblashlar brauzeringizda xavfsiz bajariladi."
   },
   en: {
     sub: "Interactive tools to master the Advanced Encryption Standard (AES) step by step.",
-    c1_t: "1. Simple Visualizer & Explanation",
-    c1_d: "Step-by-step encryption and decryption across 10 rounds with visual state matrices.",
-    c1_b: "Recommended · Best for Beginners",
-    c2_t: "2. Deep-Dive Mathematical Steps",
-    c2_d: "Detailed breakdown of SubBytes, ShiftRows, MixColumns math, and Key Expansion schedule.",
-    c3_t: "3. Complete AES Calculator",
-    c3_d: "AES-128, 192, and 256 keys with ECB & CBC modes, padding options, and hex inspector.",
+    c1_t: "1. Detailed Mathematical Steps",
+    c1_d: "Technical breakdown of SubBytes, ShiftRows, MixColumns math, and Key Expansion schedule.",
+    c2_t: "2. Complete AES Calculator",
+    c2_d: "AES-128, 192, and 256 keys with ECB & CBC modes, padding options, and hex inspector.",
     foot: "Designed for education. Runs 100% locally in your browser."
   },
   ru: {
     sub: "Интерактивные инструменты для пошагового изучения алгоритма шифрования AES.",
-    c1_t: "1. Простое объяснение и визуализатор",
-    c1_d: "Прямое шифрование и расшифрование, все 10 раундов, наглядные подсказки и анимация.",
-    c1_b: "Рекомендуется · Для новичков",
-    c2_t: "2. Детальный разбор раундов и математики",
-    c2_d: "Технический разбор SubBytes, ShiftRows, умножения в поле GF(2⁸) и расширения ключей.",
-    c3_t: "3. Полнофункциональный калькулятор AES",
-    c3_d: "Поддержка AES-128/192/256, режимов ECB и CBC, работа с текстом и шестнадцатеричным кодом.",
+    c1_t: "1. Детальный разбор раундов и математики",
+    c1_d: "Технический разбор SubBytes, ShiftRows, умножения в поле GF(2⁸) и расширения ключей.",
+    c2_t: "2. Полнофункциональный калькулятор AES",
+    c2_d: "Поддержка AES-128/192/256, режимов ECB и CBC, работа с текстом и шестнадцатеричным кодом.",
     foot: "Создано в образовательных целях. Все вычисления производятся локально в браузере."
   }
 };
@@ -135,11 +119,8 @@ function setLang(l) {
   document.getElementById('sub').textContent = t.sub;
   document.getElementById('c1_t').textContent = t.c1_t;
   document.getElementById('c1_d').textContent = t.c1_d;
-  document.getElementById('c1_b').textContent = t.c1_b;
   document.getElementById('c2_t').textContent = t.c2_t;
   document.getElementById('c2_d').textContent = t.c2_d;
-  document.getElementById('c3_t').textContent = t.c3_t;
-  document.getElementById('c3_d').textContent = t.c3_d;
   document.getElementById('foot').textContent = t.foot;
 }
 
