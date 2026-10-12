@@ -70,12 +70,14 @@ footer{text-align:center;color:#6b7799;font-size:12px;margin-top:42px;line-heigh
   <p class="sub" id="sub"></p>
 
   <div class="cards">
-    <a class="card" href="steps.html">
+    <!-- 1-o'rinda: Kalkulyator -->
+    <a class="card" href="calculator.html">
       <b id="c1_t"></b>
       <span id="c1_d"></span>
     </a>
 
-    <a class="card" href="calculator.html">
+    <!-- 2-o'rinda: Bosqichma-bosqich tahlil -->
+    <a class="card" href="steps.html">
       <b id="c2_t"></b>
       <span id="c2_d"></span>
     </a>
@@ -87,27 +89,27 @@ footer{text-align:center;color:#6b7799;font-size:12px;margin-top:42px;line-heigh
 <script>
 const T = {
   uz: {
-    sub: "AES algoritmini bosqichma-bosqich o'rganish va hisoblash vositalari.",
-    c1_t: "1. Bosqichma-bosqich tahlil (Detailed Steps)",
-    c1_d: "SubBytes, ShiftRows, MixColumns (GF(2⁸) maydoni amallari) va kalit kengaytirishning to'liq tahlili.",
-    c2_t: "2. AES Kalkulyatori (Full Calculator)",
-    c2_d: "AES-128/192/256 o'lchamlari, ECB va CBC rejimlari, to'liq matnlarni shifrlash va deshifrlash.",
+    sub: "AES algoritmini hisoblash va bosqichma-bosqich tahlil qilish vositalari.",
+    c1_t: "1. AES Kalkulyatori (Full Calculator)",
+    c1_d: "AES-128/192/256 o'lchamlari, ECB va CBC rejimlari, ixtiyoriy matnlarni shifrlash va deshifrlash.",
+    c2_t: "2. Bosqichma-bosqich tahlil (Detailed Steps)",
+    c2_d: "SubBytes, ShiftRows, MixColumns (GF(2⁸) amallari) va kalit kengaytirishning (Key Expansion) to'liq tahlili.",
     foot: "O'quv maqsadida yaratilgan. Barcha hisoblashlar brauzeringizda xavfsiz bajariladi."
   },
   en: {
-    sub: "Interactive tools to master the Advanced Encryption Standard (AES) step by step.",
-    c1_t: "1. Detailed Mathematical Steps",
-    c1_d: "Technical breakdown of SubBytes, ShiftRows, MixColumns math, and Key Expansion schedule.",
-    c2_t: "2. Complete AES Calculator",
-    c2_d: "AES-128, 192, and 256 keys with ECB & CBC modes, padding options, and hex inspector.",
+    sub: "Interactive tools to calculate and master the Advanced Encryption Standard (AES).",
+    c1_t: "1. Complete AES Calculator",
+    c1_d: "AES-128, 192, and 256 keys with ECB & CBC modes, padding options, and hex inspector.",
+    c2_t: "2. Detailed Mathematical Steps",
+    c2_d: "Technical breakdown of SubBytes, ShiftRows, MixColumns math, and Key Expansion schedule.",
     foot: "Designed for education. Runs 100% locally in your browser."
   },
   ru: {
-    sub: "Интерактивные инструменты для пошагового изучения алгоритма шифрования AES.",
-    c1_t: "1. Детальный разбор раундов и математики",
-    c1_d: "Технический разбор SubBytes, ShiftRows, умножения в поле GF(2⁸) и расширения ключей.",
-    c2_t: "2. Полнофункциональный калькулятор AES",
-    c2_d: "Поддержка AES-128/192/256, режимов ECB и CBC, работа с текстом и шестнадцатеричным кодом.",
+    sub: "Интерактивные инструменты для расчета и пошагового анализа алгоритма AES.",
+    c1_t: "1. Полнофункциональный калькулятор AES",
+    c1_d: "Поддержка AES-128/192/256, режимов ECB и CBC, работа с текстом и шестнадцатеричным кодом.",
+    c2_t: "2. Детальный разбор раундов и математики",
+    c2_d: "Технический разбор SubBytes, ShiftRows, умножения в поле GF(2⁸) и расширения ключей.",
     foot: "Создано в образовательных целях. Все вычисления производятся локально в браузере."
   }
 };
