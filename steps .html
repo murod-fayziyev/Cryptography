@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AES</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:#e8ecf8;background:radial-gradient(900px 500px at 15% -10%,#1d2a63 0,transparent 60%),radial-gradient(800px 500px at 100% 0,#0e4a52 0,transparent 55%),#0a0f1f}
+.wrap{max-width:900px;margin:0 auto;padding:24px 14px 48px}
+h1{margin:0;text-align:center;font-size:clamp(26px,5vw,40px);letter-spacing:-1px}
+h1 span{background:linear-gradient(90deg,#6ee7b7,#60a5fa);-webkit-background-clip:text;background-clip:text;color:transparent}
+.sub{text-align:center;color:#9aa6c8;margin:8px 0 20px}
+.lang{display:flex;gap:6px;justify-content:flex-end;margin-bottom:6px}.lang button{padding:4px 10px;font-size:12px}
+.card{background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:18px;margin-bottom:14px}
+label{display:block;font-size:13px;color:#9aa6c8;margin:10px 0 6px}
+input{width:100%;background:#0d1530;color:#e8ecf8;border:1px solid #27345f;border-radius:10px;padding:10px 12px;font:14px ui-monospace,Consolas,monospace;outline:none}
+input:focus{border-color:#60a5fa}
+button,select{cursor:pointer;border:1px solid #27345f;background:#111b3b;color:#e8ecf8;border-radius:10px;padding:9px 14px;font:inherit}
+button:hover{border-color:#60a5fa}button.on{background:#1d2f6b;border-color:#60a5fa}
+.go{background:linear-gradient(90deg,#34d399,#60a5fa);color:#06101f;font-weight:700;border:0}
+.inl{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:12px}
+small{display:block;color:#7f8cb0;margin-top:6px;font-family:ui-monospace,Consolas,monospace;word-break:break-all;white-space:pre-wrap}
+.err{color:#fca5a5;margin-top:8px}.ok{color:#6ee7b7}
+.bar{position:sticky;top:0;z-index:5;background:rgba(10,15,31,.94);backdrop-filter:blur(8px);padding:10px 0;margin-bottom:10px}
+.chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:8px}.chips button{padding:4px 9px;font-size:12px}
+input[type=range]{padding:0;flex:1;min-width:120px;accent-color:#60a5fa}
+.ttl{font-size:22px;font-weight:700}.ttl em{font-style:normal;color:#6ee7b7}.ttl span{font-size:13px;color:#7f8cb0;font-weight:400;margin-left:8px}
+.ex{color:#c3cce6;line-height:1.55;margin:8px 0 14px}
+.flow{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
+.flow b{font-size:26px;color:#60a5fa}
+.col small{text-align:center;font-family:inherit;margin:0 0 6px}
+.mx{display:grid;grid-template-columns:repeat(4,46px);gap:4px}
+.mx i{font:15px ui-monospace,Consolas,monospace;font-style:normal;text-align:center;background:#16224a;border-radius:7px;padding:8px 0}
+.mx i.h{background:#0f766e;color:#fff;box-shadow:0 0 0 1px #6ee7b7 inset}
+.mx i.p{color:#3b4a7a}
+.det{margin-top:16px;border-top:1px solid rgba(255,255,255,.1);padding-top:14px}
+.det h3{margin:0 0 10px;font-size:15px;color:#9aa6c8}
+pre{margin:0;background:#0d1530;border:1px solid #27345f;border-radius:10px;padding:12px;font:13px/1.55 ui-monospace,Consolas,monospace;overflow-x:auto;color:#d5dcf2}
+.sw{overflow-x:auto;margin-top:12px}
+table.sb{border-collapse:collapse;font:11px ui-monospace,Consolas,monospace}
+.sb th{color:#6ee7b7;padding:3px 5px}.sb td{padding:3px 5px;text-align:center;color:#8e9bc0;border:1px solid #1b2750}
+.sb td.u{background:#0f766e;color:#fff;font-weight:700}
+footer{text-align:center;color:#6b7799;font-size:12px;margin-top:18px}
+@media(max-width:520px){.mx{grid-template-columns:repeat(4,38px)}.mx i{font-size:13px;padding:6px 0}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="lang"><button data-l="uz" onclick="setLang('uz')">O'zbek</button><button data-l="en" onclick="setLang('en')">English</button><button data-l="ru" onclick="setLang('ru')">Русский</button></div>
+<h1>AES <span data-i="h1b"></span></h1>
+<p class="sub" data-i="tag"></p>
+
+<div class="card">
+  <label data-i="lpt"></label>
+  <input id="pt" spellcheck="false" autocomplete="off">
+  <label data-i="lkey"></label>
+  <input id="key" spellcheck="false" autocomplete="off">
+  <small id="info"></small>
+  <div class="inl"><button class="go" id="go" data-i="go"></button><button id="exb" data-i="exm"></button></div>
+  <div class="err" id="err"></div>
+</div>
+
+<div id="app" hidden>
+  <div class="bar">
+    <div class="inl" style="margin:0">
+      <button id="po" title="⏮">⏮</button><button id="pv">◀</button><button id="nx">▶</button><button id="no">⏭</button>
+      <button id="pl"></button>
+      <select id="sp"><option value="1400">0.5×</option><option value="700" selected>1×</option><option value="200">3×</option></select>
+      <input type="range" id="sl" min="0" value="0">
+    </div>
+    <div class="chips" id="chips"></div>
+    <div class="chips" id="ops"></div>
+  </div>
+  <div class="card" id="step"></div>
+</div>
+<footer data-i="foot"></footer>
+</div>
+
+<script>
+// ===== CORE (AES-128) =====
+const xt=a=>((a<<1)^((a&0x80)?0x1b:0))&255;
+const mul=(a,b)=>{let r=0;while(b){if(b&1)r^=a;a=xt(a);b>>=1}return r};
+const rot=(x,n)=>((x<<n)|(x>>(8-n)))&255;
+const inv=x=>{if(!x)return 0;for(let y=1;y<256;y++)if(mul(x,y)===1)return y};
+const S=new Uint8Array(256);
+for(let x=0;x<256;x++){const v=inv(x);S[x]=v^rot(v,1)^rot(v,2)^rot(v,3)^rot(v,4)^0x63}
+const rcon=[1,2,4,8,16,32,64,128,0x1b,0x36];
+const MM=[[2,3,1,1],[1,2,3,1],[1,1,2,3],[3,1,1,2]];
+const add=(s,k)=>s.map((b,i)=>b^k[i]);
+function shift(s){const o=new Array(16);for(let r=0;r<4;r++)for(let c=0;c<4;c++)o[r+4*c]=s[r+4*((c+r)%4)];return o}
+function mix(s){const o=new Array(16);for(let c=0;c<4;c++)for(let r=0;r<4;r++){let v=0;for(let k=0;k<4;k++)v^=mul(s[4*c+k],MM[r][k]);o[4*c+r]=v}return o}
+function kexp(key){const w=[];for(let i=0;i<4;i++)w.push(Array.from(key.slice(4*i,4*i+4)));
+  for(let i=4;i<44;i++){let t=w[i-1].slice();if(i%4===0){t=[S[t[1]],S[t[2]],S[t[3]],S[t[0]]];t[0]^=rcon[i/4-1]}w.push(t.map((b,j)=>b^w[i-4][j]))}return w}
+// Each operation (op) is split into n small parts (n=16 bytes, 4 rows, 4 columns or 4 words)
+function build(pt,key){
+  const w=kexp(key),rk=r=>w.slice(4*r,4*r+4).flat(),ops=[];let s=Array.from(pt),n;
+  ops.push({k:'load',r:0,b:s,a:s,n:1});
+  ops.push({k:'key',r:0,n:4});
+  n=add(s,rk(0));ops.push({k:'ark',r:0,b:s,a:n,n:16});s=n;
+  for(let r=1;r<=10;r++){
+    n=s.map(b=>S[b]);ops.push({k:'sub',r,b:s,a:n,n:16});s=n;
+    n=shift(s);ops.push({k:'shift',r,b:s,a:n,n:4});s=n;
+    if(r<10){n=mix(s);ops.push({k:'mix',r,b:s,a:n,n:4});s=n}
+    ops.push({k:'key',r,n:4});
+    n=add(s,rk(r));ops.push({k:'ark',r,b:s,a:n,n:16});s=n;
+  }
+  return {ops,w};
+}
+
+// ===== TEXTS: uz / en / ru =====
+const T={
+uz:{title:"AES — bosqichma-bosqich",h1b:"bosqichma-bosqich",
+tag:"AES-128 shifrlashining har bir raundi to'liq: har bir bayt, qator, ustun va kalit so'zi alohida qadamda ko'rsatiladi.",
+lpt:"Ochiq matn (16 bayt yoki 32 ta hex)",lkey:"Kalit (16 bayt yoki 32 ta hex)",go:"Boshlash",exm:"FIPS-197 namunasi",
+err:"Kirish 1–16 bayt (UTF-8) yoki aynan 32 ta hex belgi bo'lishi kerak.",auto:"▶ Avto",stop:"⏸ To'xtat",
+ptl:"ochiq matn",kl:"kalit",sub:"SubBytes",shift:"ShiftRows",mix:"MixColumns",key:"Kalit kengaytirish",ark:"AddRoundKey",
+rnd:"{0}-raund",inp:"Kirish",stp:"qadam",part:"bo'lak",state:"Holat",before:"Oldin",after:"Keyin",res:"Natija",rk:"{0}-raund kaliti",
+ex_load:"Ochiq matnning 16 bayti 4×4 jadvalga USTUN bo'yicha joylanadi (yuqoridan pastga, so'ng keyingi ustun). Bu «holat» (state). Keyingi har bir amal shu jadvalni o'zgartiradi.",
+ex_key:"Raund kaliti asosiy kalitdan hosil qilinadi (Key Expansion). Har raundda 4 ta yangi so'z (w) hisoblanadi. Har 4-so'z maxsus g funksiyasidan o'tadi (RotWord, SubWord, Rcon), qolganlari oddiy XOR.",
+ex_ark:"Holatning har bir baytiga raund kalitining mos baytini XOR (⊕) qilamiz. Bitlar bir xil bo'lsa 0, har xil bo'lsa 1. Kalit shifrga aynan shu yerda qo'shiladi.",
+ex_sub:"Har bir bayt S-box'dagi qiymatga almashtiriladi: 1-hex raqam — qator, 2-si — ustun. Bu AES'dagi yagona chiziqsiz qadam. Baytlar birin-ketin ishlanadi.",
+ex_shift:"0-qator joyida qoladi, 1-qator 1 ta, 2-qator 2 ta, 3-qator 3 ta bayt chapga siljiydi. Har bir qator alohida ko'rsatiladi.",
+ex_mix:"Har bir ustun GF(2⁸)da qat'iy matritsaga ko'paytiriladi: ustundagi har bir bayt 4 baytga bog'liq bo'ladi (diffuziya). Ustunlar birin-ketin ishlanadi. 10-raundda bu qadam yo'q.",
+byte:"Bayt",lookup:"S-box[qator {0}][ustun {1}] = {2}",how:"S-box qiymati qanday hosil bo'ladi:",inv:"Teskari element GF(2⁸)da: {0}⁻¹ = {1}",inv0:"0 ning teskarisi yo'q, 00 olinadi",aff:"Affin almashtirish",
+sbt:"S-box jadvali (ishlatilgan katak belgilangan)",row:"{0}-qator",shl:"{0} ta chapga siljiydi",noshift:"joyida qoladi",col:"{0}-ustun",
+mixn:"«·» — GF(2⁸)da ko'paytirish: 02·a = a ni 1 bit chapga siljitish (yuqori bit 1 bo'lsa natija ⊕ 1b); 03·a = 02·a ⊕ a; 01·a = a. Yangi bayt = to'rt natijaning XOR'i.",
+word:"w{0} so'zini hisoblash",kw0:"0-raund kaliti — kalitning o'zi. w{0} = {1}",ct:"Tayyor shifrmatn (hex)",ok:"✓ FIPS-197 B ilovasidagi rasmiy natija bilan mos.",
+foot:"O'quv vositasi · hammasi brauzeringizda ishlaydi · tugmalar: ← →"},
+en:{title:"AES — step by step",h1b:"step by step",
+tag:"Every round of AES-128 in full: each byte, row, column and key word is shown as its own step.",
+lpt:"Plaintext (16 bytes or 32 hex digits)",lkey:"Key (16 bytes or 32 hex digits)",go:"Start",exm:"FIPS-197 example",
+err:"Input must be 1–16 bytes (UTF-8) or exactly 32 hex digits.",auto:"▶ Auto",stop:"⏸ Pause",
+ptl:"plaintext",kl:"key",sub:"SubBytes",shift:"ShiftRows",mix:"MixColumns",key:"Key Expansion",ark:"AddRoundKey",
+rnd:"Round {0}",inp:"Input",stp:"step",part:"part",state:"State",before:"Before",after:"After",res:"Result",rk:"Round key {0}",
+ex_load:"The 16 plaintext bytes fill a 4×4 table COLUMN by column (top to bottom, then the next column). This is the “state”. Every following operation modifies it.",
+ex_key:"The round key is derived from the main key (Key Expansion). Each round computes 4 new words (w). Every 4th word goes through the special function g (RotWord, SubWord, Rcon); the others are plain XOR.",
+ex_ark:"Each state byte is XORed (⊕) with the matching round-key byte: 0 if the bits are equal, 1 if they differ. This is where the key enters the cipher.",
+ex_sub:"Each byte is replaced by its S-box value: first hex digit = row, second = column. This is the only non-linear step in AES. Bytes are processed one by one.",
+ex_shift:"Row 0 stays, row 1 shifts left by 1, row 2 by 2, row 3 by 3 bytes. Each row is shown separately.",
+ex_mix:"Each column is multiplied by a fixed matrix in GF(2⁸), so every output byte depends on 4 input bytes (diffusion). Columns are processed one by one. Skipped in round 10.",
+byte:"Byte",lookup:"S-box[row {0}][column {1}] = {2}",how:"How the S-box value is made:",inv:"Inverse in GF(2⁸): {0}⁻¹ = {1}",inv0:"0 has no inverse, 00 is used",aff:"Affine transform",
+sbt:"S-box table (used cell highlighted)",row:"Row {0}",shl:"shifts left by {0}",noshift:"stays in place",col:"Column {0}",
+mixn:"“·” is multiplication in GF(2⁸): 02·a = a shifted left 1 bit (⊕ 1b if the top bit was 1); 03·a = 02·a ⊕ a; 01·a = a. New byte = XOR of the four products.",
+word:"Computing word w{0}",kw0:"Round key 0 is the key itself. w{0} = {1}",ct:"Final ciphertext (hex)",ok:"✓ Matches the official FIPS-197 Appendix B result.",
+foot:"Learning tool · runs entirely in your browser · keys: ← →"},
+ru:{title:"AES — шаг за шагом",h1b:"шаг за шагом",
+tag:"Каждый раунд AES-128 полностью: каждый байт, строка, столбец и слово ключа показаны отдельным шагом.",
+lpt:"Открытый текст (16 байт или 32 hex-цифры)",lkey:"Ключ (16 байт или 32 hex-цифры)",go:"Начать",exm:"Пример FIPS-197",
+err:"Ввод: 1–16 байт (UTF-8) или ровно 32 hex-цифры.",auto:"▶ Авто",stop:"⏸ Пауза",
+ptl:"открытый текст",kl:"ключ",sub:"SubBytes",shift:"ShiftRows",mix:"MixColumns",key:"Расширение ключа",ark:"AddRoundKey",
+rnd:"Раунд {0}",inp:"Вход",stp:"шаг",part:"часть",state:"Состояние",before:"До",after:"После",res:"Результат",rk:"Ключ раунда {0}",
+ex_load:"16 байт открытого текста записываются в таблицу 4×4 по СТОЛБЦАМ (сверху вниз, затем следующий столбец). Это «состояние» (state). Каждая следующая операция изменяет его.",
+ex_key:"Ключ раунда получают из основного ключа (расширение ключа). В каждом раунде вычисляются 4 новых слова (w). Каждое 4-е слово проходит функцию g (RotWord, SubWord, Rcon), остальные — обычный XOR.",
+ex_ark:"Каждый байт состояния XOR-ится (⊕) с соответствующим байтом ключа раунда: 0, если биты равны, 1 — если различны. Именно здесь ключ входит в шифр.",
+ex_sub:"Каждый байт заменяется значением из S-box: первая hex-цифра — строка, вторая — столбец. Это единственный нелинейный шаг AES. Байты обрабатываются по одному.",
+ex_shift:"Строка 0 остаётся, строка 1 сдвигается влево на 1, строка 2 — на 2, строка 3 — на 3 байта. Каждая строка показана отдельно.",
+ex_mix:"Каждый столбец умножается на фиксированную матрицу в GF(2⁸): каждый байт зависит от 4 байт (диффузия). Столбцы обрабатываются по одному. В 10-м раунде шага нет.",
+byte:"Байт",lookup:"S-box[строка {0}][столбец {1}] = {2}",how:"Как получается значение S-box:",inv:"Обратный элемент в GF(2⁸): {0}⁻¹ = {1}",inv0:"у 0 нет обратного, берётся 00",aff:"Аффинное преобразование",
+sbt:"Таблица S-box (использованная ячейка выделена)",row:"Строка {0}",shl:"сдвиг влево на {0}",noshift:"остаётся на месте",col:"Столбец {0}",
+mixn:"«·» — умножение в GF(2⁸): 02·a = a со сдвигом влево на 1 бит (⊕ 1b, если старший бит был 1); 03·a = 02·a ⊕ a; 01·a = a. Новый байт = XOR четырёх произведений.",
+word:"Вычисление слова w{0}",kw0:"Ключ раунда 0 — сам ключ. w{0} = {1}",ct:"Готовый шифртекст (hex)",ok:"✓ Совпадает с официальным результатом FIPS-197, приложение B.",
+foot:"Учебный инструмент · работает в браузере · клавиши: ← →"}
+};
+
+// ===== UI =====
+const $=id=>document.getElementById(id),h2=b=>b.toString(16).padStart(2,'0'),hx=a=>a.map(h2).join(' '),bin=b=>b.toString(2).padStart(8,'0'),x1=n=>n.toString(16);
+let L='uz',OPS=[],ST=[],W=[],I=0,timer=null;
+try{L=localStorage.getItem('aesL')||'uz'}catch(e){}
+if(!T[L])L='uz';
+const t=(k,...a)=>{let s=(T[L]&&T[L][k])||T.en[k]||k;a.forEach((v,i)=>s=s.split('{'+i+'}').join(v));return s};
+
+const mat=(a,hl=[],dn)=>`<div class="mx">${[0,1,2,3].map(r=>[0,1,2,3].map(c=>{const k=r+4*c,p=dn&&!dn(k);return `<i class="${hl.includes(k)?'h':''}${p?' p':''}">${p?'··':h2(a[k])}</i>`}).join('')).join('')}</div>`;
+const col=(c,m)=>`<div class="col"><small>${c}</small>${m}</div>`;
+const rk=r=>W.slice(4*r,4*r+4).flat();
+
+function sboxTable(hl){
+  const d=[...Array(16).keys()];
+  return `<div class="sw"><table class="sb"><tr><th></th>${d.map(i=>`<th>${x1(i)}</th>`).join('')}</tr>${d.map(r=>`<tr><th>${x1(r)}</th>${d.map(c=>`<td class="${hl.has(r*16+c)?'u':''}">${h2(S[r*16+c])}</td>`).join('')}</tr>`).join('')}</table></div>`;
+}
+function keyWord(i){
+  if(i<4)return t('kw0',i,hx(W[i]));
+  const p=W[i-1],q=W[i-4];
+  if(i%4===0){
+    const rw=[p[1],p[2],p[3],p[0]],sw=rw.map(b=>S[b]),rc=rcon[i/4-1],x=[sw[0]^rc,sw[1],sw[2],sw[3]];
+    return `w${i} = w${i-4} ⊕ g(w${i-1})\n  w${i-1}  = ${hx(p)}\n  RotWord = ${hx(rw)}\n  SubWord = ${hx(sw)}\n  ⊕ Rcon(${h2(rc)} 00 00 00) = ${hx(x)}\n  ⊕ w${i-4} (${hx(q)})\n  w${i}  = ${hx(W[i])}`;
+  }
+  return `w${i} = w${i-1} ⊕ w${i-4}\n  ${hx(p)} ⊕ ${hx(q)} = ${hx(W[i])}`;
+}
+// returns [flow html, detail html] for part j of operation o
+function parts(o,j){
+  const k=o.k;
+  if(k==='load')return [col(t('state'),mat(o.a)),''];
+  if(k==='sub'){
+    const b=o.b[j],v=o.a[j],iv=inv(b),sh=[1,2,3,4].map(n=>rot(iv,n));
+    return [col(t('before'),mat(o.b,[j]))+'<b>➜</b>'+col(t('after'),mat(o.a,[j],x=>x<=j)),
+      `<h3>${t('byte')} ${j+1}/16: ${h2(b)} → ${h2(v)}</h3><pre>${t('lookup',x1(b>>4),x1(b&15),h2(v))}\n\n${t('how')}\n1) ${b?t('inv',h2(b),h2(iv)):t('inv0')}\n2) ${t('aff')}: ${[iv,...sh].map(h2).join(' ⊕ ')} ⊕ 63 = ${h2(v)}</pre><h3 style="margin-top:14px">${t('sbt')}</h3>${sboxTable(new Set([b]))}`];
+  }
+  if(k==='shift'){
+    const row=a=>[0,1,2,3].map(c=>h2(a[j+4*c])).join(' '),hl=[0,1,2,3].map(c=>j+4*c);
+    return [col(t('before'),mat(o.b,hl))+'<b>➜</b>'+col(t('after'),mat(o.a,hl,x=>(x&3)<=j)),
+      `<h3>${t('row',j)}: ${j?t('shl',j):t('noshift')}</h3><pre>${row(o.b)}   ← ${j} →   ${row(o.a)}\n\nnew[${j}][c] = old[${j}][(c+${j}) mod 4]</pre>`];
+  }
+  if(k==='mix'){
+    const c=j,a=[0,1,2,3].map(q=>o.b[4*c+q]),hl=[0,1,2,3].map(q=>4*c+q);
+    const A=a.map((v,q)=>{const x=xt(v);return `a${q} = ${h2(v)} (${bin(v)})\n  02·a${q}: ${bin((v<<1)&255)}${v&128?' ⊕ 00011011':''} = ${h2(x)}\n  03·a${q}: ${h2(x)} ⊕ ${h2(v)} = ${h2(x^v)}`}).join('\n');
+    const B=[0,1,2,3].map(r=>`b${r} = ${MM[r].map((m,q)=>`0${m}·a${q}`).join(' ⊕ ')}\n   = ${MM[r].map((m,q)=>h2(mul(a[q],m))).join(' ⊕ ')} = ${h2(o.a[4*c+r])}`).join('\n\n');
+    return [col(t('before'),mat(o.b,hl))+'<b>➜</b>'+col(t('after'),mat(o.a,hl,x=>(x>>2)<=j)),
+      `<h3>${t('col',c)}</h3><pre>${A}</pre><p class="ex" style="margin:10px 0">${t('mixn')}</p><pre>${B}</pre>`];
+  }
+  if(k==='key'){
+    const r=o.r,hl=[0,1,2,3].map(q=>4*j+q),dn=x=>(x>>2)<=j;
+    return [(r?col(t('rk',r-1),mat(rk(r-1)))+'<b>➜</b>':'')+col(t('rk',r),mat(rk(r),hl,dn)),
+      `<h3>${t('word',4*r+j)} (${j+1}/4)</h3><pre>${keyWord(4*r+j)}</pre>`];
+  }
+  const key=rk(o.r),x=o.b[j],y=key[j],z=o.a[j];
+  return [col(t('state'),mat(o.b,[j]))+'<b>⊕</b>'+col(t('rk',o.r),mat(key,[j]))+'<b>=</b>'+col(t('res'),mat(o.a,[j],q=>q<=j)),
+    `<h3>${t('byte')} ${j+1}/16</h3><pre>${bin(x)}  (${h2(x)}, ${t('state')})\n${bin(y)}  (${h2(y)}, ${t('kl')})  ⊕\n--------\n${bin(z)}  (${h2(z)}, ${t('res')})</pre>`];
+}
+const st=q=>ST.findIndex(s=>s[0]===q);
+function render(){
+  const [oi,j]=ST[I],o=OPS[oi],[flow,det]=parts(o,j);
+  const ttl=o.k==='load'?t('inp'):`${t('rnd',o.r)} · <em>${t(o.k)}</em>`;
+  let end='';
+  if(I===ST.length-1){
+    const ct=o.a.map(h2).join('');
+    end=`<div class="det"><h3>${t('ct')}</h3><pre>${ct}</pre>${ct==='3925841d02dc09fbdc118597196a0b32'&&$('pt').value.trim().toLowerCase()==='3243f6a8885a308d313198a2e0370734'?`<p class="ok">${t('ok')}</p>`:''}</div>`;
+  }
+  $('step').innerHTML=`<div class="ttl">${ttl}<span>${t('stp')} ${I+1}/${ST.length}${o.n>1?` · ${t('part')} ${j+1}/${o.n}`:''}</span></div><p class="ex">${t('ex_'+o.k)}</p><div class="flow">${flow}</div><div class="det">${det}</div>${end}`;
+  $('sl').value=I;
+  const first=r=>ST.findIndex(([q])=>OPS[q].r===r&&OPS[q].k!=='load');
+  $('chips').innerHTML=`<button class="${o.k==='load'?'on':''}" onclick="go(0)">${t('inp')}</button>`+[...Array(11).keys()].map(r=>`<button title="${t('rnd',r)}" class="${o.k!=='load'&&o.r===r?'on':''}" onclick="go(${first(r)})">${r}</button>`).join('');
+  $('ops').innerHTML=o.k==='load'?'':OPS.map((p,q)=>p.r===o.r&&p.k!=='load'?`<button class="${q===oi?'on':''}" onclick="go(${st(q)})">${t(p.k)}</button>`:'').join('');
+}
+function go(i){I=Math.max(0,Math.min(ST.length-1,i));render()}
+function jump(d){const [oi,j]=ST[I];go(d>0?(oi+1<OPS.length?st(oi+1):I):(j>0?st(oi):(oi>0?st(oi-1):0)))}
+function pad(v){
+  v=v.trim();
+  if(/^[0-9a-f]{32}$/i.test(v))return Uint8Array.from(v.match(/../g),x=>parseInt(x,16));
+  const e=new TextEncoder().encode(v);if(!e.length||e.length>16)throw new Error('len');
+  const o=new Uint8Array(16);o.set(e);return o;
+}
+function start(keep){
+  $('err').textContent='';stop();
+  try{
+    const p=pad($('pt').value),k=pad($('key').value);
+    $('info').textContent=t('ptl')+': '+Array.from(p,h2).join('')+'\n'+t('kl')+': '+Array.from(k,h2).join('');
+    const r=build(p,k);OPS=r.ops;W=r.w;ST=[];
+    OPS.forEach((o,q)=>{for(let j=0;j<o.n;j++)ST.push([q,j])});
+    I=Math.min(keep||0,ST.length-1);$('sl').max=ST.length-1;$('app').hidden=false;render();
+  }catch(e){$('err').textContent=t('err');$('app').hidden=true}
+}
+function stop(){if(timer){clearInterval(timer);timer=null}$('pl').textContent=t('auto')}
+function setLang(l){
+  L=l;try{localStorage.setItem('aesL',l)}catch(e){}
+  document.documentElement.lang=l;document.title=t('title');
+  document.querySelectorAll('[data-i]').forEach(e=>e.textContent=t(e.dataset.i));
+  document.querySelectorAll('.lang button').forEach(b=>b.classList.toggle('on',b.dataset.l===l));
+  if(!$('app').hidden)start(I);else $('pl').textContent=t('auto');
+}
+$('go').onclick=()=>start();
+$('exb').onclick=()=>{$('pt').value='3243f6a8885a308d313198a2e0370734';$('key').value='2b7e151628aed2a6abf7158809cf4f3c';start()};
+$('pv').onclick=()=>{stop();go(I-1)};$('nx').onclick=()=>{stop();go(I+1)};
+$('po').onclick=()=>{stop();jump(-1)};$('no').onclick=()=>{stop();jump(1)};
+$('sl').oninput=e=>{stop();go(+e.target.value)};
+$('pl').onclick=()=>{if(timer)return stop();$('pl').textContent=t('stop');if(I>=ST.length-1)go(0);timer=setInterval(()=>{if(I>=ST.length-1)return stop();go(I+1)},+$('sp').value)};
+document.addEventListener('keydown',e=>{if(e.target.tagName==='INPUT'||e.target.tagName==='SELECT'||!ST.length)return;if(e.key==='ArrowRight'){stop();go(I+1)}if(e.key==='ArrowLeft'){stop();go(I-1)}});
+setLang(L);$('exb').click();
+</script>
+</body>
+</html>
